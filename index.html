@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b0e19" />
+  <meta name="description" content="PatternLab is a private-first coding interview prep studio: learn patterns, solve Python problems, practice with progressive hints and spaced repetition." />
+  <title>PatternLab — Become pattern fluent.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell" id="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <button class="brand" data-nav="overview" aria-label="PatternLab home">
+        <span class="brand-icon"><span>⌘</span></span>
+        <span class="brand-words">pattern<span>lab</span><small>INTERVIEW STUDIO</small></span>
+      </button>
+      <div class="sidebar-label">WORKSPACE</div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-link active" data-nav="overview"><span class="nav-icon">◫</span> Dashboard <span class="nav-shortcut">01</span></button>
+        <button class="nav-link" data-nav="learn"><span class="nav-icon">▧</span> Learn patterns <span class="nav-shortcut">02</span></button>
+        <button class="nav-link" data-nav="practice"><span class="nav-icon">⌘</span> Problem bank <span class="nav-shortcut">03</span></button>
+        <button class="nav-link" data-nav="review"><span class="nav-icon">↻</span> Review queue <span id="review-nav-count" class="count-pill">0</span></button>
+        <button class="nav-link" data-nav="insights"><span class="nav-icon">▥</span> My progress <span class="nav-shortcut">05</span></button>
+      </nav>
+      <div class="sidebar-label sidebar-label-lower">YOUR JOURNEY</div>
+      <div class="journey" id="journey-summary"><div class="skeleton-line"></div></div>
+      <div class="sidebar-bottom">
+        <div class="sidebar-quote"><span class="quote-mark">“</span><p>Don't memorize answers.<br><strong>Recognize the pattern.</strong></p></div>
+        <button id="settings-open" class="settings-link"><span>⚙</span> Settings <span>↗</span></button>
+      </div>
+    </aside>
+
+    <div class="main-shell">
+      <header class="topbar">
+        <div class="topbar-left"><button id="menu-button" class="icon-button mobile-menu" aria-label="Toggle navigation">☰</button><span id="breadcrumb">Your workspace <span class="crumb-separator">/</span> Dashboard</span></div>
+        <div class="topbar-right">
+          <label class="global-search"><span>⌕</span><input id="global-search" placeholder="Find a problem…" autocomplete="off" aria-label="Search problems" /><kbd>/</kbd></label>
+          <span class="runner-indicator" id="runner-indicator"><span class="status-dot loading"></span> Python loading</span>
+          <button id="settings-header" class="icon-button" aria-label="Open settings" title="Settings">⚙</button><div class="avatar" title="Your personal workspace">PL</div>
+        </div>
+      </header>
+      <main class="content" id="content">
+        <!-- All views are rendered here with locally-authored content. -->
+      </main>
+    </div>
+  </div>
+
+  <div class="toast-host" id="toast-host" role="status" aria-live="polite"></div>
+  <div id="modal-root"></div>
+  <div id="mobile-overlay" class="mobile-overlay" hidden></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

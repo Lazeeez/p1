@@ -1,0 +1,25 @@
+# Local secrets / credentials / environment
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+auth.json
+host.json
+.patternlab/
+
+# Dependencies, logs, build and platform noise
+node_modules/
+coverage/
+dist/
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Exports and local browser test artifacts
+patternlab-progress-*.json
+*-preview.png
+workspace-audit.png
+.playwright/
+test-results/

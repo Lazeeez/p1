@@ -9,8 +9,8 @@ A local-first personal learning workspace for algorithms and coding interviews. 
 **Prerequisite:** [Node.js 20 or newer](https://nodejs.org/). Internet access is required to load the CodeMirror editor assets and the Pyodide Python runtime from public CDNs. Internet is also needed for AI, but the lesson and stored-progress interface can work after the page has loaded.
 
 ```bash
-git clone --branch master https://github.com/lazeeez/p1.git
-cd p1
+git clone https://github.com/lazeeez/p1.git
+cd patternlab
 npm start
 ```
 

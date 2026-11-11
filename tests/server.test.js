@@ -22,7 +22,7 @@ before(async()=>{
 after(()=>child?.kill());
 
 test('serves only allowed assets, never auth code, JSON manifests, or secrets',async()=>{
-  for(const path of ['/','/index.html','/app.js','/catalog.js','/runner.worker.js','/styles.css'])assert.equal((await fetch(BASE+path)).status,200,path);
+  for(const path of ['/','/index.html','/app.js','/catalog.js','/runner.worker.js','/styles.css','/study-guides.js','/personal-content.js'])assert.equal((await fetch(BASE+path)).status,200,path);
   for(const path of ['/server.js','/auth.js','/package.json','/README.md','/.git/config','/auth.json','/../server.js']){
     assert.equal((await fetch(BASE+path)).status,404,path);
   }
@@ -45,6 +45,15 @@ test('no paid API is used automatically and offline fallback remains functional'
   assert.equal(response.status,409);assert.match((await response.json()).error,/AI not connected/);
   const json=await fetch(BASE+'/api/coach',{method:'POST',headers:{Origin:BASE,'Content-Type':'application/json'},body:'{' });assert.equal(json.status,400);
   const tooLong=await fetch(BASE+'/api/coach',{method:'POST',headers:{Origin:BASE,'Content-Type':'application/json'},body:JSON.stringify({...body,code:'x'.repeat(18001)})});assert.equal(tooLong.status,400);
+});
+
+test('generated-content endpoint denies unauthenticated use and rejects malformed input',async()=>{
+  const headers={Origin:BASE,'Content-Type':'application/json'};
+  const notConnected=await fetch(BASE+'/api/generate',{method:'POST',headers,body:JSON.stringify({kind:'pattern',topic:'segment trees'})});
+  assert.equal(notConnected.status,409);assert.match((await notConnected.json()).error,/Connect ChatGPT/);
+  for(const body of [{kind:'invalid',topic:'x'},{kind:'exercise',topic:'x'},{kind:'pattern',topic:'x'.repeat(171)}]){
+    const res=await fetch(BASE+'/api/generate',{method:'POST',headers,body:JSON.stringify(body)});assert.equal(res.status,400);
+  }
 });
 
 test('sign-in uses official OAuth URL and callback checks the one-time state',async()=>{

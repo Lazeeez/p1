@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 
 const worker=readFileSync(fileURLToPath(new URL('../runner.worker.js',import.meta.url)),'utf8');
 const harness=worker.match(/const HARNESS = String\.raw`([\s\S]*?)`;/)?.[1];
-const candidate=['python3','python'].find(exe=>spawnSync(exe,['-c','print(1)'],{encoding:'utf8',timeout:1000}).status===0);
+const candidate=['python3','python'].find(exe=>spawnSync(exe,['-c','print(1)'],{encoding:'utf8',timeout:6000}).status===0);
 const run=payload=>{
   const code='import sys\n__payload_json=sys.stdin.read()\n'+harness+'\nprint(json.dumps(answer))';
   const child=spawnSync(candidate,['-c',code],{input:JSON.stringify(payload),encoding:'utf8',timeout:5000,maxBuffer:100000});

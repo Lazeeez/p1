@@ -1,6 +1,6 @@
 # PatternLab — private interview preparation studio
 
-A local-first personal learning workspace for algorithms and coding interviews. Learn 22 technique families, tackle 76 curated Python challenges, run tests, receive graduated hints, and use optional ChatGPT-plan-powered coaching. No database, API key, or dependency installation is necessary.
+A local-first personal learning workspace for algorithms and coding interviews. Study 22 complete pattern guides, tackle 76 curated Python challenges, practice newly generated cases, and optionally create AI-assisted lessons and exercise drafts. No database, API key, or dependency installation is necessary.
 
 > **Scope:** This version is designed for **one person running it on their own computer**. It is not a hosted multi-user application. It is not affiliated with LeetCode or any employer.
 
@@ -9,8 +9,8 @@ A local-first personal learning workspace for algorithms and coding interviews. 
 **Prerequisite:** [Node.js 20 or newer](https://nodejs.org/). Internet access is required to load the CodeMirror editor assets and the Pyodide Python runtime from public CDNs. Internet is also needed for AI, but the lesson and stored-progress interface can work after the page has loaded.
 
 ```bash
-git clone https://github.com/lazeeez/patternlab.git
-cd patternlab
+git clone --branch master https://github.com/lazeeez/p1.git
+cd p1
 npm start
 ```
 
@@ -45,12 +45,24 @@ References: [official open-source sign-in guide](https://developers.openai.com/s
 - **Ask for complexity:** helps you derive time and space costs instead of memorizing an answer.
 - **Graceful fallback:** if sign-in, network access, or plan limits prevent an AI response, the built-in mentor responds, and the Python runner keeps working.
 
+## Deep-dive lessons and dynamic practice
+
+- **Complete study notes for every one of the 22 curated patterns.** Open **Learn patterns**, pick a pattern, and work through the objective, intuition, traced example, optional reusable Python template, complexity analysis, comparisons, mistakes, and recall questions **before** opening the problem bank. The home page's main action now leads into the study material.
+- **Verified fresh-case lab.** On 12 supported canonical problems, select **Fresh verified cases** in the workspace to get seven newly calculated test fixtures. This creates a separate saved exercise with its own code, progress, and unique ID. It is the **same problem contract with new inputs**, not a new LeetCode listing. The generators calculate expected answers deterministically and have automated regression coverage.
+- **Generate new patterns with ChatGPT.** With a connected eligible ChatGPT account, open **Learn patterns → Generate new pattern with AI**, enter a topic (for example, *digit DP*), and receive a complete study-guide draft and a recognition quiz. AI-authored educational content is **not independently fact-checked**, so review its reasoning critically before relying on it.
+- **Generate related exercises with ChatGPT.** Open a pattern and choose **Create a related exercise with AI**, or use **AI variant** after solving a problem. AI-written challenges are clearly labeled **unverified drafts**; passing their tests **does not count toward verified mastery** because generated expected values may be incorrect. The app validates their structure and confines code execution to the same local browser worker, but it cannot prove the generated question or test results are correct.
+- **Automatic local persistence.** New patterns, remixes, exercises, drafts, hints, and study progress are saved in the existing browser profile, included in JSON export/import, and restored on reopening the app. They are not automatically synchronized across computers or GitHub.
+
+**AI generation is optional.** The 22 fully authored guides, 76 curated problems, built-in hints, and deterministic remix engine work without any sign-in. Creating *new concepts or entirely different questions* requires ChatGPT access and is subject to your plan allowance.
+
 ## What is included
 
 | Capability | Implementation |
 |---|---|
-| Guided learning | 22 patterns with mental models, invariants, pitfalls, and short checks |
+| Guided learning | 22 in-depth study guides with worked traces, Python templates, analysis, and recall checks |
 | Curated practice | 76 challenges, search/filter, difficulty progression, Python starters |
+| New practice | 12 verified input remix generators and optional AI-created exercise drafts |
+| Expandable curriculum | Optional AI-created pattern study notes with JSON validation, saved locally |
 | Hints | Three unlockable stages per challenge, independent of AI |
 | Python runner | Pyodide in a dedicated Web Worker, isolated from the UI thread |
 | Code feedback | Example runs, full local test cases, pass/fail output, edge-case details |
@@ -65,11 +77,11 @@ The built-in test bank is **not equivalent to LeetCode's complete hidden test su
 
 - Node listens **only** on `127.0.0.1`. Do not put the server behind a public reverse proxy, run it with a tunnel, or expose it via router port forwarding.
 - Protected ChatGPT credentials and the stable host ID are stored under **`~/.patternlab/`**, outside the Git repository; credential files use owner-only permissions where supported. **Never commit or share that directory.**
-- The server serves only the six approved frontend assets; it never serves `server.js`, `auth.js`, credentials, or project metadata.
+- The server serves only explicitly allowed frontend assets; it never serves `server.js`, `auth.js`, credentials, or project metadata.
 - CSRF protections require requests from the same browser origin; localhost host-header validation, request-size caps, and request throttling are in place.
 - Candidate Python runs in a browser Worker with a ten-second watchdog. This makes an infinite loop recoverable, **not** a hardened security sandbox for running code supplied by untrusted strangers.
 - Learning progress is stored in your **browser's localStorage** (not in your Git repository); clear browser data to erase it. Backup through **Settings → Export JSON** to transfer it between computers.
-- ChatGPT sends the exercise, your recent chat messages, your editor draft, and relevant test results to OpenAI **only when you enable ChatGPT coaching and request a response**. No site analytics, tracking account, or cloud database is configured.
+- ChatGPT sends the exercise, your recent chat messages, your editor draft, and relevant test results to OpenAI **only when you enable ChatGPT coaching and request a response**; content generation additionally sends the chosen topic and pattern context only when you request it. No site analytics, tracking account, or cloud database is configured.
 - On Windows, standard local-user OS access controls apply; owner-only POSIX file permission semantics differ.
 
 ## Code organization
@@ -79,7 +91,9 @@ patternlab/
 ├── index.html         # Website entry point
 ├── styles.css         # Responsive product UI
 ├── app.js             # Views, editor integration, progress, coaching
-├── catalog.js         # Lessons, problems, hints and test fixtures
+├── catalog.js         # Curated patterns, problems, hints and test fixtures
+├── study-guides.js    # All 22 detailed pattern learning guides
+├── personal-content.js # Validated saved pattern/exercise content and verified remix engines
 ├── runner.worker.js   # Python/WebAssembly runner and judge
 ├── server.js          # Local-only HTTP server and AI proxy
 ├── auth.js            # Official local ChatGPT OAuth client
@@ -95,27 +109,35 @@ npm run check
 npm test
 ```
 
-The test suite covers content invariants, static-file allowlisting, host/origin CSRF defenses, request validation, offline API behavior, OAuth state / signed identity validation, authorization with a mock identity provider, token renewal, model discovery, and SSE completion. Python judging was additionally exercised with correct sample solutions for arrays, hash maps, linked lists, trees, and graphs. User-facing UI smoke tests covered navigation, notes, draft preservation, guidance, and Settings.
+The test suite covers content invariants, 22 complete study guides, 12 remix generators across 180 seeds, personal-content validation, static-file allowlisting, host/origin CSRF defenses, generation request validation, offline API behavior, OAuth state / signed identity validation, authorization with a mock identity provider, token renewal, model discovery, and SSE completion. Python judging was additionally exercised with correct sample solutions for arrays, hash maps, linked lists, trees, and graphs. User-facing UI smoke tests covered navigation, notes, draft preservation, guidance, and Settings.
 
 **Testing limitation:** A real end-to-end sign-in to *your* ChatGPT account has not been performed because it requires you to authorize your own account in a browser. The main browser runner/CodeMirror/Pyodide CDN loading should also be smoke-tested on your local machine. No automated test suite can prove that an app has zero bugs.
 
 If you hit a problem: first try **Settings → Restart Python runtime**, check that your browser can access the external CDNs, and inspect the terminal for a local server error. For AI issues, open **Settings → Refresh models** or disconnect/reconnect your ChatGPT account.
 
-## Upload to GitHub
+## Update your existing GitHub repository (`lazeeez/p1`, branch `master`)
 
-Create a new **private, empty** repository named `patternlab` in GitHub (don't generate an extra README), then in the project folder run:
+This ZIP contains the updated project under its `patternlab/` directory. The supplied files are **not automatically pushed** to GitHub. Your existing repository contents could not be verified from this environment, so inspect the differences and back up your branch before replacing files.
 
 ```bash
-git init
+# Clone the repository and confirm its layout:
+git clone --branch master https://github.com/lazeeez/p1.git
+cd p1
+
+# Copy the contents of the downloaded ZIP's patternlab/ folder into
+# the matching application folder in this checkout. Then review changes:
+git status
+git diff
+npm run check
+npm test
+
 git add .
-git commit -m "Initial PatternLab personal release"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/patternlab.git
-git push -u origin main
+git commit -m "Add deep-dive study guides and dynamic practice"
+git push origin master
 ```
 
-Replace `YOUR_USERNAME` with your actual GitHub username. GitHub may prompt you to authenticate. After pushing, each update is `git add . && git commit -m "Improvement" && git push`. To use it on another laptop, clone the private repo, run `npm start`, and sign in to ChatGPT again; the browser progress requires an exported/imported JSON backup.
+If the project root is nested, change into the folder containing `package.json` before running npm commands. The project intentionally does not auto-push generated personal study notes or progress. Use **Settings → Export JSON** to make a backup and import that backup in the browser on another device. Never commit `~/.patternlab/` credentials or exported personal progress files you want to keep private.
 
 ## License and deployment
 
-The project is prepared as a **private personal-use repository** without a public open-source license. The official local open-source sign-in flow is documented for qualifying locally running/open-source apps; if you publish it publicly, choose a license and review applicable requirements. Do not deploy this backend unmodified to the public Internet. GitHub Pages will not run `server.js` or provide the same secure ChatGPT connection.
+The project is intended for a **local personal runtime**, even if its GitHub source repository is public. A public repository is not automatically open-source-licensed; review whether you want to add a license and whether the official local sign-in eligibility requirements apply to your use. Do not deploy this backend unmodified to the public Internet. GitHub Pages will not run `server.js` or provide the same secure ChatGPT connection.
